@@ -2,6 +2,8 @@
   "name": "homefixhero",
   "version": "0.1.0",
   "private": true,
+  "description": "HomeFixHero — your trusted guide to fixing home problems.",
+  "homepage": "https://homefixhero.com",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,12 +11,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "feed": "^6.0.0",
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.12",
     "next": "16.3.5",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "reading-time": "^1.5.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

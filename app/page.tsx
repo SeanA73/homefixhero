@@ -1,69 +1,91 @@
-import Image from "next/image";
+import Link from "next/link";
+import type { Metadata } from "next";
+import { ContentCard } from "@/components/content-card";
+import { categories } from "@/lib/content/categories";
+import {
+  getAllArticles,
+  getAllComparisons,
+  getAllCostGuides,
+  getAllProductReviews,
+} from "@/lib/content/loader";
+import { pageMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
 
-export default function Home() {
+export const metadata: Metadata = pageMetadata({
+  title: `${siteConfig.name} — ${siteConfig.tagline}`,
+  description:
+    "Practical, no-nonsense home repair guides, cost breakdowns, and tool reviews for plumbing, electrical, HVAC, and more.",
+  path: "/",
+});
+
+export default function HomePage() {
+  const articles = getAllArticles().slice(0, 3);
+  const costGuides = getAllCostGuides().slice(0, 3);
+  const productReviews = getAllProductReviews().slice(0, 3);
+  const comparisons = getAllComparisons().slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <section className="text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl">
+          {siteConfig.name}
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-stone-600">
+          {siteConfig.tagline} Real repair guides, honest cost breakdowns, and
+          tool reviews — written so you know exactly what to do, and when to
+          call a pro.
+        </p>
+      </section>
+
+      <section className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {categories.map((category) => (
+          <Link
+            key={category.slug}
+            href={`/categories/${category.slug}`}
+            className="rounded-lg border border-stone-200 p-4 text-center font-medium text-stone-800 transition hover:border-amber-400 hover:text-amber-700"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {category.name}
+          </Link>
+        ))}
+      </section>
+
+      <ContentSection title="Latest Guides" href="/articles" items={articles} />
+      <ContentSection title="Cost Guides" href="/cost-guides" items={costGuides} />
+      <ContentSection title="Product Reviews" href="/product-reviews" items={productReviews} />
+      <ContentSection title="Product Comparisons" href="/product-comparisons" items={comparisons} />
     </div>
+  );
+}
+
+function ContentSection({
+  title,
+  href,
+  items,
+}: {
+  title: string;
+  href: string;
+  items: { slug: string; title: string; description: string }[];
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <section className="mt-14">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold text-stone-900">{title}</h2>
+        <Link href={href} className="text-sm font-medium text-amber-700 hover:underline">
+          View all
+        </Link>
+      </div>
+      <div className="mt-5 grid gap-4 sm:grid-cols-3">
+        {items.map((item) => (
+          <ContentCard
+            key={item.slug}
+            href={`${href}/${item.slug}`}
+            title={item.title}
+            description={item.description}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
