@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { CategoryCard } from "@/components/category-card";
 import { ContentCard } from "@/components/content-card";
+import { HeroSection } from "@/components/hero-section";
 import { categories } from "@/lib/content/categories";
 import {
   getAllArticles,
@@ -26,26 +28,11 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
-      <section className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl">
-          {siteConfig.name}
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-stone-600">
-          {siteConfig.tagline} Real repair guides, honest cost breakdowns, and
-          tool reviews — written so you know exactly what to do, and when to
-          call a pro.
-        </p>
-      </section>
+      <HeroSection />
 
-      <section className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <section className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {categories.map((category) => (
-          <Link
-            key={category.slug}
-            href={`/categories/${category.slug}`}
-            className="rounded-lg border border-stone-200 p-4 text-center font-medium text-stone-800 transition hover:border-amber-400 hover:text-amber-700"
-          >
-            {category.name}
-          </Link>
+          <CategoryCard key={category.slug} category={category} />
         ))}
       </section>
 
