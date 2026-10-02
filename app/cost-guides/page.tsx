@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { ContentCard } from "@/components/content-card";
-import { getCategory } from "@/lib/content/categories";
+import { CardGrid } from "@/components/card-grid";
+import { PageHeader } from "@/components/page-header";
 import { getAllCostGuides } from "@/lib/content/loader";
 import { pageMetadata } from "@/lib/seo";
 
@@ -12,25 +12,13 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function CostGuidesPage() {
-  const guides = getAllCostGuides();
-
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-bold text-stone-900">Cost Guides</h1>
-      <p className="mt-2 text-stone-600">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+      <PageHeader eyebrow="Know before you hire" title="Cost guides">
         What things actually cost — so you can spot a fair quote from an inflated one.
-      </p>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {guides.map((guide) => (
-          <ContentCard
-            key={guide.slug}
-            href={`/cost-guides/${guide.slug}`}
-            title={guide.title}
-            description={guide.description}
-            categoryName={getCategory(guide.category)?.name}
-            meta={`Avg. $${guide.costAverage.toLocaleString()}`}
-          />
-        ))}
+      </PageHeader>
+      <div className="mt-10">
+        <CardGrid items={getAllCostGuides()} />
       </div>
     </div>
   );

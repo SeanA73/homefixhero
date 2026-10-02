@@ -6,6 +6,9 @@ tags: ["faucet", "leaks", "diy"]
 publishedAt: "2026-01-12"
 updatedAt: "2026-03-02"
 author: "HomeFixHero Editorial Team"
+coverImage: "/photos/faucet.jpg"
+difficulty: 1
+timeNeeded: "Under 1 hour"
 ---
 
 A dripping faucet wastes more water than most people realize — a single drip

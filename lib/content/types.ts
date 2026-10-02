@@ -8,12 +8,18 @@ export interface BaseContent {
   slug: string;
   title: string;
   description: string;
+  /** Compact name for tight spaces (cost cards, review cards). Falls back to `title`. */
+  shortTitle?: string;
   category: string;
   tags: string[];
   publishedAt: string;
   updatedAt: string;
   author: string;
   coverImage?: string;
+  /** 1 = easy, 2 = moderate, 3 = advanced. Only set where the guide supports it. */
+  difficulty?: 1 | 2 | 3;
+  /** Human-readable time to finish, e.g. "30–45 min". */
+  timeNeeded?: string;
   body: string;
   readingTimeMinutes: number;
 }

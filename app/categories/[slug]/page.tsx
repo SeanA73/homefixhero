@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ContentCard } from "@/components/content-card";
+import { CardGrid } from "@/components/card-grid";
+import { CategoryIcon } from "@/components/category-icon";
+import { PageHeader } from "@/components/page-header";
 import { categories, getCategory } from "@/lib/content/categories";
 import { getContentByCategory } from "@/lib/content/loader";
 import { pageMetadata } from "@/lib/seo";
@@ -31,37 +33,32 @@ export default async function CategoryPage({ params }: Props) {
   if (!category) notFound();
 
   const { articles, costGuides, productReviews, comparisons } = getContentByCategory(slug);
-
   const sections = [
-    { title: "Articles", basePath: "/articles", items: articles },
-    { title: "Cost Guides", basePath: "/cost-guides", items: costGuides },
-    { title: "Product Reviews", basePath: "/product-reviews", items: productReviews },
-    { title: "Product Comparisons", basePath: "/product-comparisons", items: comparisons },
-  ];
+    { title: "How-to guides", items: articles },
+    { title: "Cost guides", items: costGuides },
+    { title: "Tool reviews", items: productReviews },
+    { title: "Comparisons", items: comparisons },
+  ].filter((section) => section.items.length > 0);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-bold text-stone-900">{category.name}</h1>
-      <p className="mt-2 text-stone-600">{category.description}</p>
-
-      {sections.map(
-        (section) =>
-          section.items.length > 0 && (
-            <section key={section.title} className="mt-10">
-              <h2 className="text-xl font-semibold text-stone-900">{section.title}</h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {section.items.map((item) => (
-                  <ContentCard
-                    key={item.slug}
-                    href={`${section.basePath}/${item.slug}`}
-                    title={item.title}
-                    description={item.description}
-                  />
-                ))}
-              </div>
-            </section>
-          )
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+      <div className="flex items-start gap-5">
+        <CategoryIcon slug={category.slug} className="hidden size-20 shrink-0 sm:flex" iconClassName="size-9" />
+        <PageHeader eyebrow="Browse by trade" title={category.name}>
+          {category.description}
+        </PageHeader>
+      </div>
+      {sections.length === 0 && (
+        <div className="mt-10">
+          <CardGrid items={[]} />
+        </div>
       )}
+      {sections.map((section) => (
+        <section key={section.title} className="mt-14">
+          <h2 className="mb-6 text-2xl font-semibold text-ink">{section.title}</h2>
+          <CardGrid items={section.items} />
+        </section>
+      ))}
     </div>
   );
 }

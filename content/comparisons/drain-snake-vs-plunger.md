@@ -6,6 +6,7 @@ tags: ["clogs", "drains", "tools"]
 publishedAt: "2026-02-25"
 updatedAt: "2026-02-25"
 author: "HomeFixHero Editorial Team"
+coverImage: "/photos/sink.jpg"
 items:
   - name: "Plunger (flange/toilet style)"
     rating: 4.2

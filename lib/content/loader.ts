@@ -3,6 +3,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
 import type {
+  AnyContent,
   Article,
   ComparisonItem,
   ContentKind,
@@ -21,7 +22,21 @@ const DIRS: Record<ContentKind, string> = {
   comparison: "comparisons",
 };
 
-function readMarkdownFiles(dir: string): { slug: string; data: Record<string, unknown>; content: string }[] {
+type MarkdownFile = { slug: string; data: Record<string, unknown>; content: string };
+
+// Content is static per build, so cache parsed files in production. In dev, re-read
+// every time so edits to markdown show up without restarting the server.
+const fileCache = new Map<string, MarkdownFile[]>();
+
+function readMarkdownFiles(dir: string): MarkdownFile[] {
+  const cached = fileCache.get(dir);
+  if (cached) return cached;
+  const files = loadMarkdownFiles(dir);
+  if (process.env.NODE_ENV === "production") fileCache.set(dir, files);
+  return files;
+}
+
+function loadMarkdownFiles(dir: string): MarkdownFile[] {
   const fullDir = path.join(CONTENT_ROOT, dir);
   if (!fs.existsSync(fullDir)) return [];
 
@@ -41,11 +56,14 @@ function baseFields(slug: string, data: Record<string, unknown>, content: string
     title: data.title as string,
     description: data.description as string,
     category: data.category as string,
+    shortTitle: data.shortTitle as string | undefined,
     tags: (data.tags as string[]) ?? [],
     publishedAt: data.publishedAt as string,
     updatedAt: (data.updatedAt as string) ?? (data.publishedAt as string),
     author: (data.author as string) ?? "HomeFixHero Editorial Team",
     coverImage: data.coverImage as string | undefined,
+    difficulty: data.difficulty as 1 | 2 | 3 | undefined,
+    timeNeeded: data.timeNeeded as string | undefined,
     body: content,
     readingTimeMinutes: Math.max(1, Math.round(readingTime(content).minutes)),
   };
@@ -138,4 +156,33 @@ export function getContentByCategory(categorySlug: string) {
     productReviews: getAllProductReviews().filter((item) => item.category === categorySlug),
     comparisons: getAllComparisons().filter((item) => item.category === categorySlug),
   };
+}
+
+export function getAllContent(): AnyContent[] {
+  return sortByDateDesc<AnyContent>([
+    ...getAllArticles(),
+    ...getAllCostGuides(),
+    ...getAllProductReviews(),
+    ...getAllComparisons(),
+  ]);
+}
+
+/** Other content in the same category first, then shared tags, newest first. */
+export function getRelatedContent(item: AnyContent, limit = 3): AnyContent[] {
+  const score = (other: AnyContent) =>
+    (other.category === item.category ? 10 : 0) +
+    other.tags.filter((tag) => item.tags.includes(tag)).length;
+
+  return getAllContent()
+    .filter((other) => !(other.kind === item.kind && other.slug === item.slug))
+    .map((other) => ({ other, score: score(other) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ other }) => other);
+}
+
+export function getCategoryCount(categorySlug: string): number {
+  const { articles, costGuides, productReviews, comparisons } = getContentByCategory(categorySlug);
+  return articles.length + costGuides.length + productReviews.length + comparisons.length;
 }

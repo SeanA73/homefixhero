@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
-import { Prose } from "@/components/prose";
-import { getCategory } from "@/lib/content/categories";
+import { ContentPage } from "@/components/content-page";
+import { averagePosition, formatPrice } from "@/lib/content/cost";
 import { getAllCostGuides, getCostGuide } from "@/lib/content/loader";
 import { pageMetadata } from "@/lib/seo";
-import { articleSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { articleSchema } from "@/lib/structured-data";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -36,73 +36,48 @@ export default async function CostGuidePage({ params }: Props) {
   const guide = getCostGuide(slug);
   if (!guide) notFound();
 
-  const category = getCategory(guide.category);
-  const currency = guide.currency === "USD" ? "$" : `${guide.currency} `;
+  const price = (value: number) => formatPrice(guide.currency, value);
+  const position = averagePosition(guide);
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-12">
-      <JsonLd
-        data={articleSchema({
-          title: guide.title,
-          description: guide.description,
-          path: `/cost-guides/${guide.slug}`,
-          publishedAt: guide.publishedAt,
-          updatedAt: guide.updatedAt,
-          author: guide.author,
-        })}
-      />
-      <JsonLd
-        data={breadcrumbSchema([
-          { name: "Home", path: "/" },
-          { name: "Cost Guides", path: "/cost-guides" },
-          { name: guide.title, path: `/cost-guides/${guide.slug}` },
-        ])}
-      />
-      {category && (
-        <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">
-          {category.name}
-        </span>
-      )}
-      <h1 className="mt-1 text-3xl font-bold text-stone-900 sm:text-4xl">{guide.title}</h1>
-      <p className="mt-3 text-sm text-stone-500">
-        Updated{" "}
-        {new Date(guide.updatedAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </p>
-
-      <div className="mt-6 grid grid-cols-3 gap-3 rounded-lg border border-stone-200 bg-stone-50 p-5 text-center">
-        <div>
-          <p className="text-xs uppercase text-stone-500">Low</p>
-          <p className="text-xl font-bold text-stone-900">
-            {currency}
-            {guide.costLow.toLocaleString()}
-          </p>
+    <ContentPage
+      item={guide}
+      schema={
+        <JsonLd
+          data={articleSchema({
+            title: guide.title,
+            description: guide.description,
+            path: `/cost-guides/${guide.slug}`,
+            publishedAt: guide.publishedAt,
+            updatedAt: guide.updatedAt,
+            author: guide.author,
+          })}
+        />
+      }
+    >
+      <div className="rounded-xl border border-brand/40 bg-brand-soft p-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand-ink">
+          Typical cost{guide.unit ? ` per ${guide.unit}` : ""}
+        </p>
+        <p className="mt-1 text-4xl font-bold text-ink">{price(guide.costAverage)}</p>
+        <p className="mt-1 text-sm text-subtle">
+          Most jobs fall between {price(guide.costLow)} and {price(guide.costHigh)}.
+        </p>
+        <div
+          className="relative mt-6 h-2 rounded-full bg-brand/30"
+          role="img"
+          aria-label={`Average ${price(guide.costAverage)} within range ${price(guide.costLow)} to ${price(guide.costHigh)}`}
+        >
+          <span
+            className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-paper bg-brand-deep shadow"
+            style={{ left: `${position}%` }}
+          />
         </div>
-        <div>
-          <p className="text-xs uppercase text-stone-500">Average</p>
-          <p className="text-xl font-bold text-amber-700">
-            {currency}
-            {guide.costAverage.toLocaleString()}
-          </p>
+        <div className="mt-2 flex justify-between text-xs text-subtle">
+          <span>{price(guide.costLow)}</span>
+          <span>{price(guide.costHigh)}</span>
         </div>
-        <div>
-          <p className="text-xs uppercase text-stone-500">High</p>
-          <p className="text-xl font-bold text-stone-900">
-            {currency}
-            {guide.costHigh.toLocaleString()}
-          </p>
-        </div>
-        {guide.unit && (
-          <p className="col-span-3 mt-1 text-xs text-stone-500">Per {guide.unit}</p>
-        )}
       </div>
-
-      <div className="mt-8">
-        <Prose markdown={guide.body} />
-      </div>
-    </article>
+    </ContentPage>
   );
 }

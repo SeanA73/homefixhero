@@ -1,63 +1,82 @@
+import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
+import { categories } from "@/lib/content/categories";
 import { siteConfig } from "@/lib/site-config";
 
-const socialLinks: { label: string; href: string }[] = [
-  { label: "Facebook", href: siteConfig.social.facebook },
-  { label: "X", href: siteConfig.social.x },
-  { label: "Pinterest", href: siteConfig.social.pinterest },
-  { label: "YouTube", href: siteConfig.social.youtube },
-  { label: "LinkedIn", href: siteConfig.social.linkedin },
+const columns = [
+  {
+    title: "Fix it",
+    links: categories.map((c) => ({ href: `/categories/${c.slug}`, label: c.name })),
+  },
+  {
+    title: "Plan it",
+    links: [
+      { href: "/cost-guides", label: "Project costs" },
+      { href: "/product-reviews", label: "Tool reviews" },
+      { href: "/product-comparisons", label: "Comparisons" },
+      { href: "/search", label: "Search" },
+      { href: "/saved", label: "Saved guides" },
+    ],
+  },
+  {
+    title: "About",
+    links: [
+      { href: "/about", label: "Our mission & standards" },
+      { href: "/contact", label: "Contact us" },
+      { href: "/privacy-policy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+    ],
+  },
 ];
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-16 border-t border-stone-200 bg-stone-50">
-      <div className="mx-auto max-w-5xl px-6 py-10 text-sm text-stone-600">
-        <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">
+    <footer className="mt-24 bg-bark text-on-dark-muted">
+      <div className="mx-auto max-w-6xl px-6 py-14">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
-            <p className="text-base font-semibold text-stone-900">{siteConfig.name}</p>
-            <p className="mt-1 max-w-sm">{siteConfig.tagline}</p>
-            <a
-              href={siteConfig.url}
-              className="mt-2 inline-block text-amber-700 hover:underline"
-            >
-              {siteConfig.domain}
-            </a>
+            <Link href="/" className="flex items-center gap-2.5" aria-label={`${siteConfig.name} home`}>
+              <BrandMark size={38} />
+              <span className="font-serif text-2xl font-bold text-on-dark">
+                HomeFix<span className="text-brand">Hero</span>
+              </span>
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-on-dark-muted">
+              {siteConfig.tagline} Clear help for calmer homeowners.
+            </p>
+            <p className="mt-4 flex items-center gap-2 text-xs text-on-dark-muted">
+              <ShieldCheck className="size-4 text-brand" aria-hidden />
+              Safety callouts in every repair guide
+            </p>
           </div>
-          <nav aria-label="Footer" className="flex flex-col gap-2 sm:items-end">
-            <Link href="/about" className="hover:text-amber-700">
-              About
-            </Link>
-            <Link href="/contact" className="hover:text-amber-700">
-              Contact
-            </Link>
-            <Link href="/privacy-policy" className="hover:text-amber-700">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-amber-700">
-              Terms of Use
-            </Link>
-          </nav>
+          {columns.map((column) => (
+            <nav key={column.title} aria-label={column.title}>
+              <p className="font-serif text-lg font-semibold text-on-dark">{column.title}</p>
+              <ul className="mt-4 space-y-2.5 text-sm">
+                {column.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-on-dark-muted transition hover:text-brand">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
-        <div className="mt-8 flex flex-col gap-4 border-t border-stone-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-2 border-t border-paper/10 pt-6 text-xs text-on-dark-faint sm:flex-row sm:justify-between">
           <p>
             © {year} {siteConfig.name}. All rights reserved.
           </p>
-          <div className="flex gap-4">
-            {socialLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-amber-700"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+          <p>
+            Questions or corrections?{" "}
+            <a href={`mailto:${siteConfig.email}`} className="underline hover:text-brand">
+              {siteConfig.email}
+            </a>
+          </p>
         </div>
       </div>
     </footer>

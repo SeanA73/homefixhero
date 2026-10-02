@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { CategoryCard } from "@/components/category-card";
+import { PageHeader } from "@/components/page-header";
 import { categories } from "@/lib/content/categories";
+import { getCategoryCount } from "@/lib/content/loader";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -11,18 +13,11 @@ export const metadata: Metadata = pageMetadata({
 
 export default function CategoriesPage() {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-bold text-stone-900">Categories</h1>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+      <PageHeader eyebrow="Browse by trade" title="Start where the trouble is" />
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {categories.map((category) => (
-          <Link
-            key={category.slug}
-            href={`/categories/${category.slug}`}
-            className="rounded-lg border border-stone-200 p-5 transition hover:border-amber-400 hover:shadow-sm"
-          >
-            <h2 className="text-lg font-semibold text-stone-900">{category.name}</h2>
-            <p className="mt-2 text-sm text-stone-600">{category.description}</p>
-          </Link>
+          <CategoryCard key={category.slug} category={category} count={getCategoryCount(category.slug)} />
         ))}
       </div>
     </div>

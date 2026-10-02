@@ -6,6 +6,7 @@ tags: ["water-heater", "cost-guide"]
 publishedAt: "2026-01-20"
 updatedAt: "2026-03-10"
 author: "HomeFixHero Editorial Team"
+shortTitle: "Replace a water heater"
 costLow: 900
 costHigh: 4500
 costAverage: 1800

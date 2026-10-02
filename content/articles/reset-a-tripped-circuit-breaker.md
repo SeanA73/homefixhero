@@ -6,6 +6,9 @@ tags: ["breaker", "electrical-safety", "diy"]
 publishedAt: "2026-02-04"
 updatedAt: "2026-02-04"
 author: "HomeFixHero Editorial Team"
+coverImage: "/photos/breaker.jpg"
+difficulty: 1
+timeNeeded: "About 10 min"
 ---
 
 A tripped circuit breaker is doing its job — cutting power before a wire

@@ -6,6 +6,8 @@ tags: ["drill", "dewalt", "cordless-tools"]
 publishedAt: "2026-02-18"
 updatedAt: "2026-02-18"
 author: "HomeFixHero Editorial Team"
+shortTitle: "DEWALT 20V MAX Cordless Drill/Driver"
+coverImage: "/photos/drill.jpg"
 productName: "DEWALT 20V MAX Cordless Drill/Driver Kit (DCD771C2)"
 brand: "DEWALT"
 rating: 4.6
